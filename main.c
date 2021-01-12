@@ -116,6 +116,7 @@ static ble_uuid_t m_adv_uuids[]          =                                      
 {
     {BLE_UUID_NUS_SERVICE, NUS_SERVICE_UUID_TYPE}
 };
+
 static bool test_start_flag = false;
 static uint32_t tx_cnt = 0;
 static volatile bool busy_statue = false;
@@ -531,7 +532,7 @@ void bsp_event_handler(bsp_event_t event)
             err_code = sd_ble_gap_disconnect(m_conn_handle, BLE_HCI_REMOTE_USER_TERMINATED_CONNECTION);
             if (err_code != NRF_ERROR_INVALID_STATE)
             {
-                APP_ERROR_CHECK(err_code);
+               APP_ERROR_CHECK(err_code);
             }
             break;
 
@@ -545,7 +546,7 @@ void bsp_event_handler(bsp_event_t event)
                 }
             }
             break;
-		case BSP_EVENT_KEY_3:
+		case BSP_EVENT_KEY_0:
 			test_start_flag=true;
 			counter_start();
 			
@@ -778,9 +779,10 @@ void data_through_test(void)
 		tx_cnt++;
 		if(5000 == tx_cnt)
 		{
+			tx_cnt = 0;
 			counter_stop();
 			uint32_t use_time = counter_get();
-			NRF_LOG_INFO("send 1220KByte USE time = %dms",use_time);		
+			NRF_LOG_INFO("send 1220K Byte use time = %dms data_rate = %d kbps",use_time,1220*1000*8/(use_time));		
 		}
     }
 
@@ -805,7 +807,6 @@ int main(void)
     services_init();
     advertising_init();
     conn_params_init();
-
     // Start execution.
     printf("\r\nUART started.\r\n");
     NRF_LOG_INFO("Debug logging for UART over RTT started.");
